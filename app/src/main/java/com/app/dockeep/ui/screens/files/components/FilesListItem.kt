@@ -3,6 +3,9 @@ package com.app.dockeep.ui.screens.files.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,20 +43,26 @@ fun FileListItem(
     selectionMode: Boolean,
     addToSelected: (DocumentItem) -> Unit,
     removeFromSelected: (DocumentItem) -> Unit,
-    onLongClick: () -> Unit
+    onLongClick: () -> Unit,
+    isCompact: Boolean = false
 ) {
     ListItem(
-        colors = if(isSelected)  ListItemDefaults.colors(
+        colors = if (isSelected) ListItemDefaults.colors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         ) else ListItemDefaults.colors(),
         headlineContent = {
-            Text(
-                item.name,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = if (item.isFolder) FontWeight.Bold else FontWeight.Normal
-            )
+            Column {
+                Text(
+                    item.name,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    style = if (isCompact) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.titleMedium,
+                    fontWeight = if (item.isFolder) FontWeight.Bold else FontWeight.Normal
+                )
+                if (!isCompact) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+            }
         },
         supportingContent = {
             Text(
@@ -64,14 +73,14 @@ fun FileListItem(
             )
         },
         leadingContent = {
-                Box(
-                    modifier = Modifier
-                        .size(50.dp)
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(MaterialTheme.colorScheme.surfaceContainerHigh),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if(item.isFolder) {
+            Box(
+                modifier = Modifier
+                    .size(if (isCompact) 40.dp else 50.dp)
+                    .clip(RoundedCornerShape(if (isCompact) 10.dp else 14.dp))
+                    .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+                contentAlignment = Alignment.Center
+            ) {
+                if (item.isFolder) {
                         Icon(
                             Icons.Default.Folder,
                             contentDescription = null
