@@ -89,6 +89,7 @@ fun FilesScreen(
     val filesList by mainVM.filess.collectAsState()
     val dirList by mainVM.folders
     val loading by mainVM.loading
+    val isCompact by mainVM.compactView
     var queryString by remember {
         mutableStateOf("")
     }
@@ -187,13 +188,16 @@ fun FilesScreen(
 
         if (showSortSheet) {
             SortBottomSheet(
-                initial = mainVM.getSortType(),
+                initialType = mainVM.getSortType(),
+                initialOrder = mainVM.getSortOrder(),
                 onDismiss = {
                     showSortSheet = false
                 },
-                onSelect = {
-                    mainVM.sortFiles(it)
-                    showSortSheet = false
+                onTypeSelect = {
+                    mainVM.setSortType(it)
+                },
+                onOrderChange = {
+                    mainVM.setSortOrder(it)
                 }
             )
         }
@@ -346,7 +350,7 @@ fun FilesScreen(
                                 isInSelectionMode = true
                                 selectedItems.add(item)
                             },
-
+                            isCompact = isCompact
                         )
                     }
 

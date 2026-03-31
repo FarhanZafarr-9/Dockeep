@@ -29,9 +29,11 @@ fun ThemeSelectionDialog(
         mutableStateOf(initialTheme)
     }
 
-    AlertDialog(title = {
-        Text(text = "Choose Theme")
-    }, text = {
+    AlertDialog(
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        title = {
+            Text(text = "Choose Theme", style = MaterialTheme.typography.headlineSmall)
+        }, text = {
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {

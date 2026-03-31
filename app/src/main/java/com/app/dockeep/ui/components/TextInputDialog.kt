@@ -42,6 +42,7 @@ fun TextInputDialog(
     }
 
     AlertDialog(
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         title = {
             Text(text = title, style = MaterialTheme.typography.headlineSmall)
         },
