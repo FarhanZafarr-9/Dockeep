@@ -60,7 +60,7 @@ fun FileListItem(
                     fontWeight = if (item.isFolder) FontWeight.Bold else FontWeight.Normal
                 )
                 if (!isCompact) {
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         },

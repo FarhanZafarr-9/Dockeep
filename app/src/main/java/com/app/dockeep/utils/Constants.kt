@@ -15,6 +15,9 @@ object Constants {
     const val COMPACT_VIEW_KEY = "COMPACT_VIEW"
     const val SHOW_HIDDEN_FILES_KEY = "SHOW_HIDDEN_FILES"
     const val SORT_ORDER_KEY = "SORT_ORDER"
+    const val IS_GRID_VIEW_KEY = "IS_GRID_VIEW"
+    const val CONFIRM_DELETE_KEY = "CONFIRM_DELETE"
+    const val FOLDERS_FIRST_KEY = "FOLDERS_FIRST"
     const val UNK = "unknown"
     const val OCTET_STREAM = "application/octet-stream"
 }

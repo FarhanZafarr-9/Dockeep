@@ -15,9 +15,12 @@ import com.app.dockeep.data.files.FilesRepository
 import com.app.dockeep.data.preferences.DataStoreRepository
 import com.app.dockeep.model.DocumentItem
 import com.app.dockeep.utils.Constants.COMPACT_VIEW_KEY
+import com.app.dockeep.utils.Constants.CONFIRM_DELETE_KEY
 import com.app.dockeep.utils.Constants.CONTENT_PATH_KEY
 import com.app.dockeep.utils.Constants.DELETE_KEY
 import com.app.dockeep.utils.Constants.FIRST_START_KEY
+import com.app.dockeep.utils.Constants.FOLDERS_FIRST_KEY
+import com.app.dockeep.utils.Constants.IS_GRID_VIEW_KEY
 import com.app.dockeep.utils.Constants.SHOW_HIDDEN_FILES_KEY
 import com.app.dockeep.utils.Constants.SORT_ORDER_KEY
 import com.app.dockeep.utils.Constants.SORT_TYPE_KEY
@@ -57,6 +60,9 @@ class MainViewModel @Inject constructor(
     val deleteOriginal = mutableStateOf(true)
     val compactView = mutableStateOf(false)
     val showHiddenFiles = mutableStateOf(false)
+    val isGridView = mutableStateOf(false)
+    val confirmDelete = mutableStateOf(true)
+    val foldersFirst = mutableStateOf(true)
 
     init {
         getAppTheme()
@@ -64,6 +70,9 @@ class MainViewModel @Inject constructor(
         getDeleteOriginal()
         getCompactView()
         getShowHiddenFiles()
+        getGridView()
+        getConfirmDelete()
+        getFoldersFirst()
 
         viewModelScope.launch(Dispatchers.IO) {
             getContentPathUri()?.let { uri ->
@@ -133,6 +142,37 @@ class MainViewModel @Inject constructor(
             prefRepo.putBool(SHOW_HIDDEN_FILES_KEY, bool)
             showHiddenFiles.value = bool
             getContentPathUri()?.let { loadFiles(it) }
+        }
+    }
+
+    fun getGridView() =
+        runBlocking { isGridView.value = prefRepo.getBool(IS_GRID_VIEW_KEY) ?: false }
+
+    fun setGridView(bool: Boolean) {
+        viewModelScope.launch {
+            prefRepo.putBool(IS_GRID_VIEW_KEY, bool)
+            isGridView.value = bool
+        }
+    }
+
+    fun getConfirmDelete() =
+        runBlocking { confirmDelete.value = prefRepo.getBool(CONFIRM_DELETE_KEY) ?: true }
+
+    fun setConfirmDelete(bool: Boolean) {
+        viewModelScope.launch {
+            prefRepo.putBool(CONFIRM_DELETE_KEY, bool)
+            confirmDelete.value = bool
+        }
+    }
+
+    fun getFoldersFirst() =
+        runBlocking { foldersFirst.value = prefRepo.getBool(FOLDERS_FIRST_KEY) ?: true }
+
+    fun setFoldersFirst(bool: Boolean) {
+        viewModelScope.launch {
+            prefRepo.putBool(FOLDERS_FIRST_KEY, bool)
+            foldersFirst.value = bool
+            sortFiles(getSortType())
         }
     }
 
@@ -269,32 +309,21 @@ class MainViewModel @Inject constructor(
 
     fun sortFiles(type: String) {
         val isAscending = getSortOrder()
+        val keepFoldersFirst = foldersFirst.value
 
-        when (type) {
-            "Name" -> {
-                files.value = if (isAscending) {
-                    files.value.sortedWith(compareByDescending<DocumentItem> { it.isFolder }.thenBy { it.name.lowercase() }).toList()
-                } else {
-                    files.value.sortedWith(compareByDescending<DocumentItem> { it.isFolder }.thenByDescending { it.name.lowercase() }).toList()
-                }
-            }
+        val comparator = when (type) {
+            "Size" -> compareBy<DocumentItem> { it.size }
+            "Date" -> compareBy<DocumentItem> { it.date }
+            else -> compareBy<DocumentItem> { it.name.lowercase() }
+        }.let { if (isAscending) it else it.reversed() }
 
-            "Size" -> {
-                files.value = if (isAscending) {
-                    files.value.sortedWith(compareByDescending<DocumentItem> { it.isFolder }.thenBy { it.size }).toList()
-                } else {
-                    files.value.sortedWith(compareByDescending<DocumentItem> { it.isFolder }.thenByDescending { it.size }).toList()
-                }
-            }
-
-            "Date" -> {
-                files.value = if (isAscending) {
-                    files.value.sortedWith(compareByDescending<DocumentItem> { it.isFolder }.thenBy { it.date }).toList()
-                } else {
-                    files.value.sortedWith(compareByDescending<DocumentItem> { it.isFolder }.thenByDescending { it.date }).toList()
-                }
-            }
+        val finalComparator = if (keepFoldersFirst) {
+            compareByDescending<DocumentItem> { it.isFolder }.then(comparator)
+        } else {
+            comparator
         }
+
+        files.value = files.value.sortedWith(finalComparator).toList()
     }
 
     fun renameFile(folder: String = "", doc: Uri, name: String) {

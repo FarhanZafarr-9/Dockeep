@@ -10,9 +10,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -38,16 +43,17 @@ import androidx.navigation.NavController
 import com.app.dockeep.model.DocumentItem
 import com.app.dockeep.ui.MainViewModel
 import com.app.dockeep.ui.components.AppSearchBar
-import com.app.dockeep.ui.components.LoadingDialog
 import com.app.dockeep.ui.components.OptionsBottomSheet
 import com.app.dockeep.ui.components.SortBottomSheet
 import com.app.dockeep.ui.screens.files.components.Dialogs
 import com.app.dockeep.ui.screens.files.components.FileListItem
+import com.app.dockeep.ui.screens.files.components.FilesGridItem
 import com.app.dockeep.ui.screens.files.components.FilesEmptyState
 import com.app.dockeep.ui.screens.files.components.FilesFAB
 import com.app.dockeep.ui.screens.files.components.FilesTopBar
 import com.app.dockeep.ui.screens.files.components.SelectAllCheckbox
 import com.app.dockeep.ui.screens.files.components.SelectionTopBar
+import com.app.dockeep.utils.Constants.IS_GRID_VIEW_KEY
 import com.app.dockeep.utils.Constants.SETTINGS_ROUTE
 import com.app.dockeep.utils.Helper.openDocument
 import com.app.dockeep.utils.Helper.openDocumentIntent
@@ -90,6 +96,8 @@ fun FilesScreen(
     val dirList by mainVM.folders
     val loading by mainVM.loading
     val isCompact by mainVM.compactView
+    val isGridView by mainVM.isGridView
+    val confirmDeletePref by mainVM.confirmDelete
     var queryString by remember {
         mutableStateOf("")
     }
@@ -106,6 +114,15 @@ fun FilesScreen(
     }
 
     val effectiveItems = selectedItems.ifEmpty { selectedItem?.let { listOf(it) } ?: emptyList() }
+
+    fun triggerDelete() {
+        if (confirmDeletePref) {
+            showConfirmDelete = true
+        } else {
+            mainVM.deleteFiles(uri, effectiveItems.map { it.uri })
+            resetSelectionMode()
+        }
+    }
 
     LaunchedEffect(key1 = Unit) {
         try {
@@ -212,7 +229,7 @@ fun FilesScreen(
                     showRenameFileDialog = true
                 },
                 onDelete = {
-                    showConfirmDelete = true
+                    triggerDelete()
                 },
                 onOpen = { item ->
                     context.openDocument(item.uri, item.mimeType)
@@ -241,7 +258,13 @@ fun FilesScreen(
                 showConfirmDelete = false
                 resetSelectionMode()
             },
-            dismissDelete = { showConfirmDelete = false },
+            dismissDelete = {
+                showConfirmDelete = false
+                if (!confirmDeletePref) {
+                    // if it was triggered but confirmDelete is false, we should have already deleted
+                    // but the Dialogs component handles the actual dialog visibility
+                }
+            },
             showCreateFolder = showCreateFolderDialog,
             onCreateFolderConfirm = {
                 mainVM.createFolder(
@@ -297,67 +320,112 @@ fun FilesScreen(
             }
 
             if (loading) {
-                LoadingDialog()
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    androidx.compose.material3.CircularProgressIndicator(
+                        strokeCap = androidx.compose.ui.graphics.StrokeCap.Round,
+                        modifier = Modifier.size(48.dp),
+                        strokeWidth = 4.dp
+                    )
+                }
             }
-            if (filesList.isEmpty()) {
+            if (filesList.isEmpty() && !loading) {
                 FilesEmptyState()
             }
 
             Box(contentAlignment = Alignment.TopCenter, modifier = Modifier.fillMaxSize()) {
 
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    if (isInSelectionMode) {
-                        item {
-                            SelectAllCheckbox { isChecked ->
-                                if (isChecked) {
-                                    selectedItems.removeAll(filesList)
-                                    val itemsToAdd = filesList.filterNot { it in selectedItems }
-                                    selectedItems.addAll(itemsToAdd)
-                                } else selectedItems.removeAll(filesList)
-                            }
+                if (isGridView) {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3),
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(filesList) { item ->
+                            val isSelected = selectedItems.contains(item)
+                            FilesGridItem(
+                                item = item,
+                                onClick = {
+                                    if (item.isFolder) onNavigate(item.uri.toString(), item.name)
+                                    else context.openDocument(item.uri, item.mimeType)
+                                },
+                                onMoreClick = {
+                                    selectedItem = item
+                                    showOptionsSheet = true
+                                },
+                                isSelected = isSelected,
+                                selectionMode = isInSelectionMode,
+                                addToSelected = {
+                                    selectedItems.add(item)
+                                },
+                                removeFromSelected = {
+                                    selectedItems.remove(item)
+                                },
+                                onLongClick = {
+                                    isInSelectionMode = true
+                                    selectedItems.add(item)
+                                }
+                            )
                         }
                     }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        if (isInSelectionMode) {
+                            item {
+                                SelectAllCheckbox { isChecked ->
+                                    if (isChecked) {
+                                        selectedItems.removeAll(filesList)
+                                        val itemsToAdd = filesList.filterNot { it in selectedItems }
+                                        selectedItems.addAll(itemsToAdd)
+                                    } else selectedItems.removeAll(filesList)
+                                }
+                            }
+                        }
 
-                    item {
-                        Spacer(
-                            modifier = Modifier.height(10.dp)
-                        )
-                    }
+                        item {
+                            Spacer(
+                                modifier = Modifier.height(10.dp)
+                            )
+                        }
 
-                    items(filesList) { item ->
-                        val isSelected = selectedItems.contains(item)
-                        FileListItem(
-                            item = item,
-                            onClick = {
-                                if (item.isFolder) onNavigate(item.uri.toString(), item.name)
-                                else context.openDocument(item.uri, item.mimeType)
-                            },
-                            onMoreClick = {
-                                selectedItem = item
-                                showOptionsSheet = true
-                            },
-                            isSelected = isSelected,
-                            selectionMode = isInSelectionMode,
-                            addToSelected = {
-                                selectedItems.add(item)
-                            },
-                            removeFromSelected = {
-                                selectedItems.remove(item)
-                            },
-                            onLongClick = {
-                                isInSelectionMode = true
-                                selectedItems.add(item)
-                            },
-                            isCompact = isCompact
-                        )
-                    }
+                        items(filesList) { item ->
+                            val isSelected = selectedItems.contains(item)
+                            FileListItem(
+                                item = item,
+                                onClick = {
+                                    if (item.isFolder) onNavigate(item.uri.toString(), item.name)
+                                    else context.openDocument(item.uri, item.mimeType)
+                                },
+                                onMoreClick = {
+                                    selectedItem = item
+                                    showOptionsSheet = true
+                                },
+                                isSelected = isSelected,
+                                selectionMode = isInSelectionMode,
+                                addToSelected = {
+                                    selectedItems.add(item)
+                                },
+                                removeFromSelected = {
+                                    selectedItems.remove(item)
+                                },
+                                onLongClick = {
+                                    isInSelectionMode = true
+                                    selectedItems.add(item)
+                                },
+                                isCompact = isCompact
+                            )
+                        }
 
-                    item {
-                        Spacer(
-                            modifier = Modifier.height(50.dp)
-                        )
+                        item {
+                            Spacer(
+                                modifier = Modifier.height(50.dp)
+                            )
+                        }
                     }
                 }
             }

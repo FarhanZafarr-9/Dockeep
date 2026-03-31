@@ -33,6 +33,9 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material.icons.outlined.CheckBox
+import androidx.compose.material.icons.outlined.GridView
+import androidx.compose.material.icons.outlined.SortByAlpha
 import androidx.compose.material.icons.outlined.VerifiedUser
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.ViewCompact
@@ -78,6 +81,9 @@ fun SettingsScreen(
     var deleteOrig by mainVM.deleteOriginal
     var compactView by mainVM.compactView
     var showHiddenFiles by mainVM.showHiddenFiles
+    var isGridView by mainVM.isGridView
+    var confirmDelete by mainVM.confirmDelete
+    var foldersFirst by mainVM.foldersFirst
 
     val contentPathLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -141,8 +147,18 @@ fun SettingsScreen(
                     onClick = { openThemeDialog = true }
                 )
                 SettingsItem(
+                    title = "Grid view",
+                    subtitle = "Switch between list and grid layout",
+                    icon = Icons.Outlined.GridView,
+                    trailingContent = {
+                        Switch(
+                            checked = isGridView,
+                            onCheckedChange = { checked -> mainVM.setGridView(checked) })
+                    }
+                )
+                SettingsItem(
                     title = "Compact view",
-                    subtitle = "Show more items on screen",
+                    subtitle = "Show more items on screen in list mode",
                     icon = Icons.Outlined.ViewCompact,
                     trailingContent = {
                         Switch(
@@ -158,6 +174,29 @@ fun SettingsScreen(
                         Switch(
                             checked = showHiddenFiles,
                             onCheckedChange = { checked -> mainVM.setShowHiddenFiles(checked) })
+                    }
+                )
+                SettingsItem(
+                    title = "Folders first",
+                    subtitle = "Always show folders above files",
+                    icon = Icons.Outlined.SortByAlpha,
+                    trailingContent = {
+                        Switch(
+                            checked = foldersFirst,
+                            onCheckedChange = { checked -> mainVM.setFoldersFirst(checked) })
+                    }
+                )
+            }
+
+            SettingsGroup(title = "Operations") {
+                SettingsItem(
+                    title = "Confirm delete",
+                    subtitle = "Ask before deleting any file",
+                    icon = Icons.Outlined.CheckBox,
+                    trailingContent = {
+                        Switch(
+                            checked = confirmDelete,
+                            onCheckedChange = { checked -> mainVM.setConfirmDelete(checked) })
                     }
                 )
             }
