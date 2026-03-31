@@ -44,14 +44,14 @@ fun FileListItem(
 ) {
     ListItem(
         colors = if(isSelected)  ListItemDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.onSecondaryContainer.copy(0.3f)
         ) else ListItemDefaults.colors(),
         headlineContent = {
             Text(
                 item.name,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
-                style = MaterialTheme.typography.titleMedium,
+                fontSize = TextUnit(16f, TextUnitType.Sp),
                 fontWeight = if (item.isFolder) FontWeight.Bold else FontWeight.Normal
             )
         },
@@ -60,7 +60,7 @@ fun FileListItem(
                 if (item.isFolder) "Folder" else "${humanReadableSize(item.size!!)} • ${getTimeAgo(item.date!!)}",
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
-                style = MaterialTheme.typography.bodySmall,
+                fontSize = TextUnit(12f, TextUnitType.Sp),
             )
         },
         leadingContent = {

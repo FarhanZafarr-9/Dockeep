@@ -9,7 +9,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SearchBar
@@ -41,9 +40,6 @@ fun AppSearchBar(
     }
 
     SearchBar(
-        colors = SearchBarDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
-        ),
         windowInsets = WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
         inputField = {
             SearchBarDefaults.InputField(
@@ -60,7 +56,7 @@ fun AppSearchBar(
                 expanded = false,
                 onExpandedChange = {  },
                 placeholder = {
-                    Text(text = "Search", style = MaterialTheme.typography.bodyLarge)
+                    Text(text = "Search", fontSize = TextUnit(15f, TextUnitType.Sp),)
                 },
                 leadingIcon = {
                     Icon(imageVector = Icons.Default.Search, contentDescription = null)

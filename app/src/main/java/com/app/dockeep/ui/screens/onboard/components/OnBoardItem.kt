@@ -37,7 +37,8 @@ fun OnBoardItem(page: OnBoardModel) {
 
         Text(
             text = page.title,
-            style = MaterialTheme.typography.displaySmall.copy(
+            style = TextStyle(
+                fontSize = 36.sp,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
             )
@@ -46,7 +47,9 @@ fun OnBoardItem(page: OnBoardModel) {
         Text(
             text = page.description,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-            style = MaterialTheme.typography.bodyLarge.copy(
+            style = TextStyle(
+                fontSize = 14.sp,
+                fontWeight = FontWeight.W400,
                 textAlign = TextAlign.Center,
             )
         )
