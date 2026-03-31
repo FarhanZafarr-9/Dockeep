@@ -5,6 +5,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -42,16 +43,14 @@ fun TextInputDialog(
 
     AlertDialog(
         title = {
-            Text(text = title)
+            Text(text = title, style = MaterialTheme.typography.headlineSmall)
         },
         text = {
             OutlinedTextField(
                 value = textFieldValue,
                 label = { Text("Name") },
                 onValueChange = { textFieldValue = it },
-                textStyle = TextStyle(
-                    fontSize = 18.sp
-                ),
+                textStyle = MaterialTheme.typography.bodyLarge,
                 keyboardOptions = KeyboardOptions.Default.copy(
                     capitalization = KeyboardCapitalization.Sentences
                 ),

@@ -10,6 +10,7 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.OpenWith
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import com.app.dockeep.model.DocumentItem
@@ -27,6 +28,7 @@ fun OptionsBottomSheet(
     onCompress:(List<DocumentItem>) -> Unit
 ) {
     ModalBottomSheet(
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
         onDismissRequest = onDismiss
     ) {
         Column {
