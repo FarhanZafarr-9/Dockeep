@@ -12,6 +12,8 @@ object Constants {
     const val DELETE_KEY = "DELETE"
     const val FIRST_START_KEY = "FIRST_START"
     const val THEME_KEY = "THEME"
+    const val SHOW_HIDDEN_KEY = "SHOW_HIDDEN"
+    const val COMPACT_LIST_KEY = "COMPACT_LIST"
     const val UNK = "unknown"
     const val OCTET_STREAM = "application/octet-stream"
 }

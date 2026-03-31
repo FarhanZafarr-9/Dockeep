@@ -33,6 +33,7 @@ import com.app.dockeep.utils.Helper.humanReadableSize
 
 @Composable
 fun FileListItem(
+    compact: Boolean = false,
     item: DocumentItem,
     onClick: () -> Unit,
     onMoreClick: () -> Unit,
@@ -51,8 +52,10 @@ fun FileListItem(
                 item.name,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = if (item.isFolder) FontWeight.Bold else FontWeight.Normal
+                style = (if (compact) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.titleMedium).copy(
+                    fontWeight = if (item.isFolder) FontWeight.Bold else FontWeight.Medium,
+                    lineHeight = if (compact) 20.sp else 24.sp
+                )
             )
         },
         supportingContent = {
@@ -60,14 +63,18 @@ fun FileListItem(
                 if (item.isFolder) "Folder" else "${humanReadableSize(item.size!!)} • ${getTimeAgo(item.date!!)}",
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
-                style = MaterialTheme.typography.bodySmall,
+                style = (if (compact) MaterialTheme.typography.bodySmall else MaterialTheme.typography.bodyMedium).copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    lineHeight = if (compact) 16.sp else 20.sp
+                ),
+                modifier = Modifier.padding(top = if (compact) 0.dp else 2.dp)
             )
         },
         leadingContent = {
                 Box(
                     modifier = Modifier
-                        .size(50.dp)
-                        .clip(RoundedCornerShape(14.dp))
+                        .size(if (compact) 40.dp else 50.dp)
+                        .clip(RoundedCornerShape(if (compact) 10.dp else 14.dp))
                         .background(MaterialTheme.colorScheme.surfaceContainerHigh),
                     contentAlignment = Alignment.Center
                 ) {

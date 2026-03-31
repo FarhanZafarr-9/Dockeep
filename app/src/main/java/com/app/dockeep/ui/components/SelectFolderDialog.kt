@@ -3,6 +3,7 @@ package com.app.dockeep.ui.components
 import android.net.Uri
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -23,8 +24,9 @@ fun SelectFolderDialog(
     var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
 
     AlertDialog(
+        onDismissRequest = onDismiss,
         title = {
-            Text(text = title)
+            Text(text = title, style = MaterialTheme.typography.headlineSmall)
         },
         text = {
             LargeMenuDropdown(
@@ -33,21 +35,25 @@ fun SelectFolderDialog(
                 selectedIndex = selectedIndex,
                 selectedItemToString = { it.first },
                 onItemSelected = { index, _ -> selectedIndex = index },
-                modifier = Modifier.padding(10.dp)
+                modifier = Modifier.padding(top = 16.dp)
             )
         },
-        onDismissRequest = onDismiss,
         confirmButton = {
-            TextButton(onClick = {
-                onConfirm(folders.getOrNull(selectedIndex)?.second?.toString() ?: "")
-            }) {
-                Text("Done")
+            TextButton(
+                onClick = {
+                    onConfirm(folders.getOrNull(selectedIndex)?.second?.toString() ?: "")
+                }
+            ) {
+                Text("Done", style = MaterialTheme.typography.labelLarge)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text("Cancel", style = MaterialTheme.typography.labelLarge)
             }
         },
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurfaceVariant
     )
 }

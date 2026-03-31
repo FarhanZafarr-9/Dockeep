@@ -14,9 +14,11 @@ import androidx.lifecycle.viewModelScope
 import com.app.dockeep.data.files.FilesRepository
 import com.app.dockeep.data.preferences.DataStoreRepository
 import com.app.dockeep.model.DocumentItem
+import com.app.dockeep.utils.Constants.COMPACT_LIST_KEY
 import com.app.dockeep.utils.Constants.CONTENT_PATH_KEY
 import com.app.dockeep.utils.Constants.DELETE_KEY
 import com.app.dockeep.utils.Constants.FIRST_START_KEY
+import com.app.dockeep.utils.Constants.SHOW_HIDDEN_KEY
 import com.app.dockeep.utils.Constants.SORT_TYPE_KEY
 import com.app.dockeep.utils.Constants.THEME_KEY
 import com.app.dockeep.utils.Helper.extractUris
@@ -52,11 +54,15 @@ class MainViewModel @Inject constructor(
 
     val firstStart = mutableStateOf(true)
     val deleteOriginal = mutableStateOf(true)
+    val showHidden = mutableStateOf(false)
+    val compactList = mutableStateOf(false)
 
     init {
         getAppTheme()
         getFirstStart()
         getDeleteOriginal()
+        getShowHidden()
+        getCompactList()
 
         viewModelScope.launch(Dispatchers.IO) {
             getContentPathUri()?.let { uri ->
@@ -107,6 +113,27 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun getShowHidden() =
+        runBlocking { showHidden.value = prefRepo.getBool(SHOW_HIDDEN_KEY) ?: false }
+
+    fun setShowHidden(bool: Boolean) {
+        viewModelScope.launch {
+            prefRepo.putBool(SHOW_HIDDEN_KEY, bool)
+            showHidden.value = bool
+            loadFiles(getContentPathUri() ?: "")
+        }
+    }
+
+    fun getCompactList() =
+        runBlocking { compactList.value = prefRepo.getBool(COMPACT_LIST_KEY) ?: false }
+
+    fun setCompactList(bool: Boolean) {
+        viewModelScope.launch {
+            prefRepo.putBool(COMPACT_LIST_KEY, bool)
+            compactList.value = bool
+        }
+    }
+
     suspend fun rootExists(): Boolean =
         filesRepo.pathExists(getContentPathUri()?.toUri() ?: Uri.EMPTY)
 
@@ -146,7 +173,9 @@ class MainViewModel @Inject constructor(
         val folder = resolveFolderUri(folderUri)
 
         val fileList = withContext(Dispatchers.IO) {
-            filesRepo.listFilesInDirectory(folder)
+            filesRepo.listFilesInDirectory(folder).let { list ->
+                if (showHidden.value) list else list.filter { !it.name.startsWith(".") }
+            }
         }
 
         withContext(Dispatchers.Main) {
@@ -228,40 +257,35 @@ class MainViewModel @Inject constructor(
     }
 
     fun sortFiles(type: String) {
-
         setSortType(type)
 
-        when (type) {
-            "Name A - Z" -> {
-                files.value =
-                    files.value.sortedWith(compareByDescending<DocumentItem> { it.isFolder }.thenBy { it.name.lowercase() }).toList()
-            }
+        val isAscending = type.contains("Ascending")
+        val baseType = type.split(" ").first()
 
-            "Name Z - A" -> {
-                files.value =
-                    files.value.sortedWith(compareByDescending<DocumentItem> { it.isFolder }.thenByDescending { it.name.lowercase() }).toList()
+        files.value = when (baseType) {
+            "Name" -> {
+                if (isAscending) {
+                    files.value.sortedWith(compareByDescending<DocumentItem> { it.isFolder }.thenBy { it.name.lowercase() })
+                } else {
+                    files.value.sortedWith(compareByDescending<DocumentItem> { it.isFolder }.thenByDescending { it.name.lowercase() })
+                }
             }
-
-            "Largest first" -> {
-                files.value =
-                    files.value.sortedWith(compareByDescending<DocumentItem> { it.isFolder }.thenByDescending { it.size  }).toList()
+            "Size" -> {
+                if (isAscending) {
+                    files.value.sortedWith(compareByDescending<DocumentItem> { it.isFolder }.thenBy { it.size })
+                } else {
+                    files.value.sortedWith(compareByDescending<DocumentItem> { it.isFolder }.thenByDescending { it.size })
+                }
             }
-
-            "Smallest first" -> {
-                files.value =
-                    files.value.sortedWith(compareByDescending<DocumentItem> { it.isFolder }.thenBy { it.size  }).toList()
+            "Date" -> {
+                if (isAscending) {
+                    files.value.sortedWith(compareByDescending<DocumentItem> { it.isFolder }.thenBy { it.date })
+                } else {
+                    files.value.sortedWith(compareByDescending<DocumentItem> { it.isFolder }.thenByDescending { it.date })
+                }
             }
-
-            "Newest first" -> {
-                files.value =
-                    files.value.sortedWith(compareByDescending<DocumentItem> { it.isFolder }.thenByDescending {  it.date  }).toList()
-            }
-
-            "Oldest first" -> {
-                files.value =
-                    files.value.sortedWith(compareByDescending<DocumentItem> { it.isFolder }.thenBy { it.date }).toList()
-            }
-        }
+            else -> files.value
+        }.toList()
     }
 
     fun renameFile(folder: String = "", doc: Uri, name: String) {

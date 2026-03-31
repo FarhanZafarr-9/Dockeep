@@ -89,6 +89,7 @@ fun FilesScreen(
     val filesList by mainVM.filess.collectAsState()
     val dirList by mainVM.folders
     val loading by mainVM.loading
+    val compactList by mainVM.compactList
     var queryString by remember {
         mutableStateOf("")
     }
@@ -325,6 +326,7 @@ fun FilesScreen(
                     items(filesList) { item ->
                         val isSelected = selectedItems.contains(item)
                         FileListItem(
+                            compact = compactList,
                             item = item,
                             onClick = {
                                 if (item.isFolder) onNavigate(item.uri.toString(), item.name)

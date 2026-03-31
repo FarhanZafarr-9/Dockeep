@@ -29,41 +29,51 @@ fun ThemeSelectionDialog(
         mutableStateOf(initialTheme)
     }
 
-    AlertDialog(title = {
-        Text(text = "Choose Theme")
-    }, text = {
-        Column(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            themeOptions.forEach { theme ->
-                Row(verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { selectedTheme = theme }) {
-
-                    RadioButton(selected = (theme == selectedTheme),
-                        onClick = { selectedTheme = theme })
-                    Text(
-                        text = theme.text,
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(text = "Choose Theme", style = MaterialTheme.typography.headlineSmall)
+        },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                themeOptions.forEach { theme ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { selectedTheme = theme }
+                    ) {
+                        RadioButton(
+                            selected = (theme == selectedTheme),
+                            onClick = { selectedTheme = theme }
+                        )
+                        Text(
+                            text = theme.text,
+                            style = MaterialTheme.typography.bodyLarge,
+                        )
+                    }
                 }
             }
-        }
-    }, onDismissRequest = {
-        onDismiss()
-    }, dismissButton = {
-        TextButton(onClick = {
-            onDismiss()
-        }) {
-            Text("Cancel")
-        }
-    }, confirmButton = {
-        TextButton(onClick = {
-            onSubmit(selectedTheme)
-            onDismiss()
-        }) {
-            Text("Done")
-        }
-    })
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onSubmit(selectedTheme)
+                    onDismiss()
+                }
+            ) {
+                Text("Done", style = MaterialTheme.typography.labelLarge)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel", style = MaterialTheme.typography.labelLarge)
+            }
+        },
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+    )
 }

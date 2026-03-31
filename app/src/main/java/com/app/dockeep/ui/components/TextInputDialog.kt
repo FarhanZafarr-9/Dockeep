@@ -42,6 +42,7 @@ fun TextInputDialog(
     }
 
     AlertDialog(
+        onDismissRequest = onDismiss,
         title = {
             Text(text = title, style = MaterialTheme.typography.headlineSmall)
         },
@@ -55,30 +56,28 @@ fun TextInputDialog(
                     capitalization = KeyboardCapitalization.Sentences
                 ),
                 modifier = Modifier
-                    .padding(5.dp)
+                    .padding(top = 16.dp)
                     .focusable(interactionSource = interactionSource)
-                    .focusRequester(focusRequester)
-                ,
+                    .focusRequester(focusRequester),
+                shape = MaterialTheme.shapes.medium
             )
-        },
-        onDismissRequest = {
-            onDismiss()
         },
         confirmButton = {
             TextButton(
-                onClick = {
-                    onConfirm(textFieldValue.text)
-                }) {
-                Text("Done")
+                onClick = { onConfirm(textFieldValue.text) }
+            ) {
+                Text("Done", style = MaterialTheme.typography.labelLarge)
             }
         },
         dismissButton = {
             TextButton(
-                onClick = {
-                    onDismiss()
-                }) {
-                Text("Cancel")
+                onClick = onDismiss
+            ) {
+                Text("Cancel", style = MaterialTheme.typography.labelLarge)
             }
         },
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurfaceVariant
     )
 }

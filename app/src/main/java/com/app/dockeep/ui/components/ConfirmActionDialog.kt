@@ -14,30 +14,29 @@ fun ConfirmActionDialog(
     onConfirm: () -> Unit
 ) {
     AlertDialog(
+        onDismissRequest = onDismiss,
         title = {
             Text(text = title, style = MaterialTheme.typography.headlineSmall)
         },
         text = {
             Text(text = message, style = MaterialTheme.typography.bodyMedium)
         },
-        onDismissRequest = {
-            onDismiss()
-        },
         confirmButton = {
             TextButton(
-                onClick = {
-                    onConfirm()
-                }) {
-                Text("Confirm")
+                onClick = onConfirm
+            ) {
+                Text("Confirm", style = MaterialTheme.typography.labelLarge)
             }
         },
         dismissButton = {
             TextButton(
-                onClick = {
-                    onDismiss()
-                }) {
-                Text("Cancel")
+                onClick = onDismiss
+            ) {
+                Text("Cancel", style = MaterialTheme.typography.labelLarge)
             }
         },
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        textContentColor = MaterialTheme.colorScheme.onSurfaceVariant
     )
 }
