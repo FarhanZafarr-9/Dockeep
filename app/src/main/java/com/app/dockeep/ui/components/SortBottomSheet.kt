@@ -30,6 +30,7 @@ fun SortBottomSheet(
     onSelect: (String) -> Unit
 ) {
     ModalBottomSheet(
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
         onDismissRequest = onDismiss,
     ) {
         val radioOptions = listOf(

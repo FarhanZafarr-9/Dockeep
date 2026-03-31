@@ -23,6 +23,7 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.VerifiedUser
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
@@ -95,16 +96,16 @@ fun SettingsScreen(
                 ) {
 
                     ListItem(
-                        headlineContent = { Text(text = "Save location") },
-                        supportingContent = { Text("Choose where imported files will be stored") },
+                        headlineContent = { Text(text = "Save location", style = MaterialTheme.typography.titleMedium) },
+                        supportingContent = { Text("Choose where imported files will be stored", style = MaterialTheme.typography.bodyMedium) },
                         leadingContent = { Icon(Icons.Outlined.Folder, contentDescription = null) },
                         modifier = Modifier.clickable {
                             contentPathLauncher.launch(Intent(Intent.ACTION_OPEN_DOCUMENT_TREE))
                         })
 
                     ListItem(
-                        headlineContent = { Text(text = "Delete originals") },
-                        supportingContent = { Text("Remove source files after they are imported") },
+                        headlineContent = { Text(text = "Delete originals", style = MaterialTheme.typography.titleMedium) },
+                        supportingContent = { Text("Remove source files after they are imported", style = MaterialTheme.typography.bodyMedium) },
                         trailingContent = {
                             Switch(
                                 checked = deleteOrig,
@@ -113,8 +114,8 @@ fun SettingsScreen(
                         leadingContent = { Icon(Icons.Outlined.Delete, contentDescription = null) })
 
                     ListItem(
-                        headlineContent = { Text(text = "App theme") },
-                        supportingContent = { Text("Switch between light, dark, or system default") },
+                        headlineContent = { Text(text = "App theme", style = MaterialTheme.typography.titleMedium) },
+                        supportingContent = { Text("Switch between light, dark, or system default", style = MaterialTheme.typography.bodyMedium) },
                         leadingContent = {
                             Icon(
                                 Icons.Outlined.Settings, contentDescription = null
@@ -123,8 +124,8 @@ fun SettingsScreen(
                         modifier = Modifier.clickable { openThemeDialog = true })
 
                     ListItem(
-                        headlineContent = { Text(text = "Share app") },
-                        supportingContent = { Text("Let others know about Dockeep") },
+                        headlineContent = { Text(text = "Share app", style = MaterialTheme.typography.titleMedium) },
+                        supportingContent = { Text("Let others know about Dockeep", style = MaterialTheme.typography.bodyMedium) },
                         leadingContent = { Icon(Icons.Outlined.Share, contentDescription = null) },
                         modifier = Modifier.clickable {
                             val sendIntent = Intent().apply {
@@ -142,8 +143,8 @@ fun SettingsScreen(
                         })
 
                     ListItem(
-                        headlineContent = { Text(text = "Contact developer") },
-                        supportingContent = { Text("Send feedback, report issues, or ask questions") },
+                        headlineContent = { Text(text = "Contact developer", style = MaterialTheme.typography.titleMedium) },
+                        supportingContent = { Text("Send feedback, report issues, or ask questions", style = MaterialTheme.typography.bodyMedium) },
                         leadingContent = { Icon(Icons.Outlined.Email, contentDescription = null) },
                         modifier = Modifier.clickable {
                             val emailIntent = Intent(
@@ -157,8 +158,8 @@ fun SettingsScreen(
                         })
 
                     ListItem(
-                        headlineContent = { Text(text = "Terms & Conditions") },
-                        supportingContent = { Text("Read the legal terms for using Dockeep") },
+                        headlineContent = { Text(text = "Terms & Conditions", style = MaterialTheme.typography.titleMedium) },
+                        supportingContent = { Text("Read the legal terms for using Dockeep", style = MaterialTheme.typography.bodyMedium) },
                         leadingContent = {
                             Icon(
                                 Icons.Outlined.VerifiedUser, contentDescription = null
@@ -174,8 +175,8 @@ fun SettingsScreen(
                         })
 
                     ListItem(
-                        headlineContent = { Text(text = "Privacy Policy") },
-                        supportingContent = { Text("Learn how your data is collected and used") },
+                        headlineContent = { Text(text = "Privacy Policy", style = MaterialTheme.typography.titleMedium) },
+                        supportingContent = { Text("Learn how your data is collected and used", style = MaterialTheme.typography.bodyMedium) },
                         leadingContent = { Icon(Icons.Outlined.Lock, contentDescription = null) },
                         modifier = Modifier.clickable {
                             try {

@@ -1,6 +1,7 @@
 package com.app.dockeep.ui.components
 
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -14,10 +15,10 @@ fun ConfirmActionDialog(
 ) {
     AlertDialog(
         title = {
-            Text(text = title)
+            Text(text = title, style = MaterialTheme.typography.headlineSmall)
         },
         text = {
-            Text(text = message)
+            Text(text = message, style = MaterialTheme.typography.bodyMedium)
         },
         onDismissRequest = {
             onDismiss()

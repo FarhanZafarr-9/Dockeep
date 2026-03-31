@@ -6,6 +6,7 @@ import androidx.compose.material.icons.automirrored.outlined.Sort
 import androidx.compose.material.icons.outlined.CreateNewFolder
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
@@ -22,7 +23,7 @@ fun FilesTopBar(title: String, displayBackIcon: Boolean, scrollBehaviour: TopApp
     TopAppBar(
         scrollBehavior = scrollBehaviour,
         title = {
-            Text(title)
+            Text(title, style = MaterialTheme.typography.titleLarge)
         },
         actions = {
             IconButton(

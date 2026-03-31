@@ -24,12 +24,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.app.dockeep.model.OnBoardModel
@@ -96,10 +95,7 @@ fun OnboardingScreen(
                 ) {
                     Text(
                         "Skip",
-                        style = TextStyle(
-                            fontSize = 17.sp,
-                            fontWeight = FontWeight.Normal,
-                        ),
+                        style = MaterialTheme.typography.labelLarge,
                     )
                 }
 
@@ -115,11 +111,11 @@ fun OnboardingScreen(
                                 .height(if (isSelected) 8.dp else 8.dp)
                                 .border(
                                     width = 1.dp,
-                                    color = Color(0xFF707784),
+                                    color = MaterialTheme.colorScheme.outline,
                                     shape = RoundedCornerShape(10.dp)
                                 )
                                 .background(
-                                    color = if (isSelected) Color(0xFF3B6C64) else Color(0xFFFFFFFF),
+                                    color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
                                     shape = CircleShape
                                 )
                         )
@@ -132,10 +128,7 @@ fun OnboardingScreen(
                     ) {
                         Text(
                             "Start",
-                            style = TextStyle(
-                                fontSize = 17.sp,
-                                fontWeight = FontWeight.Normal,
-                            ),
+                            style = MaterialTheme.typography.labelLarge,
                         )
                     }
                 } else {
@@ -149,10 +142,7 @@ fun OnboardingScreen(
                     ) {
                         Text(
                             "Next",
-                            style = TextStyle(
-                                fontSize = 17.sp,
-                                fontWeight = FontWeight.Normal,
-                            ),
+                            style = MaterialTheme.typography.labelLarge,
                         )
                     }
                 }
